@@ -10,50 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Search earn money
-        run: |
-          echo "Searching earn money"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+earn+money+reddit" \
-          > earn_money.html
-          cat earn_money.html
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Search earn money student
+      - name: Search Reddit links from Google
         run: |
-          echo "Searching earn money student"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+earn+money+student+reddit" \
-          > student_money.html
-          cat student_money.html
+          queries=(
+            "earn+money+reddit"
+            "earn+money+student+reddit"
+            "side+hustle+reddit"
+            "side+hustle+student+reddit"
+            "make+money+online+reddit"
+            "student+jobs+reddit"
+          )
 
-      - name: Search side hustle
-        run: |
-          echo "Searching side hustle"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+side+hustle+reddit" \
-          > side_hustle.html
-          cat side_hustle.html
+          > links.txt
 
-      - name: Search side hustle student
-        run: |
-          echo "Searching side hustle student"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+side+hustle+student+reddit" \
-          > side_hustle_student.html
-          cat side_hustle_student.html
+          for query in "${queries[@]}"
+          do
+            echo "Searching: $query"
 
-      - name: Search make money online
-        run: |
-          echo "Searching make money online"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+make+money+online+reddit" \
-          > online_money.html
-          cat online_money.html
+            curl -A "Mozilla/5.0" \
+            "https://www.google.com/search?q=site:reddit.com+$query" \
+            | grep -o 'https://www.reddit.com/r/[^"&]*' \
+            >> links.txt
+          done
 
-      - name: Search student jobs
-        run: |
-          echo "Searching student jobs"
-          curl -A "Mozilla/5.0" \
-          "https://www.google.com/search?q=site:reddit.com+student+jobs+reddit" \
-          > student_jobs.html
-          cat student_jobs.html
+          sort links.txt | uniq > unique_links.txt
+
+          echo "Final Reddit Links:"
+          cat unique_links.txt
