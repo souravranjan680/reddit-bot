@@ -10,33 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Search Reddit links from Google
+      - name: Search Reddit links
         run: |
           queries=(
             "earn+money+reddit"
             "earn+money+student+reddit"
             "side+hustle+reddit"
-            "side+hustle+student+reddit"
             "make+money+online+reddit"
             "student+jobs+reddit"
           )
 
+          touch links.txt
           > links.txt
 
           for query in "${queries[@]}"
           do
-            echo "Searching: $query"
+            echo "Searching $query"
 
-            curl -A "Mozilla/5.0" \
+            curl -L -A "Mozilla/5.0" \
             "https://www.google.com/search?q=site:reddit.com+$query" \
-            | grep -o 'https://www.reddit.com/r/[^"&]*' \
-            >> links.txt
+            | grep "reddit.com/r/" \
+            >> links.txt || true
           done
 
-          sort links.txt | uniq > unique_links.txt
-
-          echo "Final Reddit Links:"
-          cat unique_links.txt
+          echo "Final Links:"
+          cat links.txt
