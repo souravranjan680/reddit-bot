@@ -20,34 +20,34 @@ jobs:
             "student jobs"
           )
 
-          > all_posts.txt
-
           for query in "${queries[@]}"
           do
+            echo "=============================="
             echo "Searching: $query"
 
             encoded_query=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
 
-            response=$(curl -s -L \
-              -A "Mozilla/5.0 RedditSearchBot/1.0" \
-              "https://www.reddit.com/search.json?q=$encoded_query&sort=new&limit=10")
+            curl -s -A "Mozilla/5.0" \
+            "https://www.reddit.com/search.json?q=$encoded_query&sort=new&limit=5" \
+            > response.json
 
-            echo "$response" | python3 -c '
-import sys, json
+            python3 - <<EOF
+import json
 
 try:
-    data = json.load(sys.stdin)
+    with open("response.json") as f:
+        data = json.load(f)
 
-    for post in data["data"]["children"]:
+    posts = data["data"]["children"]
+
+    for post in posts:
         p = post["data"]
         print("TITLE:", p["title"])
         print("URL: https://reddit.com" + p["permalink"])
-        print("---")
+        print("----------------------")
 
 except Exception as e:
     print("Error:", e)
-'
-          done >> all_posts.txt
+EOF
 
-          echo "FINAL POSTS:"
-          cat all_posts.txt
+          done
