@@ -2,7 +2,7 @@ name: Reddit Search Bot
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # every 30 min
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Search Reddit posts
+      - name: Search Reddit Posts
         run: |
           queries=(
             "earn money"
@@ -26,28 +26,28 @@ jobs:
           do
             echo "Searching: $query"
 
-            encoded_query=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$query'''))")
+            encoded_query=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
 
-            curl -L \
-              -A "Mozilla/5.0 (compatible; RedditSearchBot/1.0)" \
-              "https://www.reddit.com/search.json?q=$encoded_query&sort=new&limit=10" \
-              | python3 -c "
+            response=$(curl -s -L \
+              -A "Mozilla/5.0 RedditSearchBot/1.0" \
+              "https://www.reddit.com/search.json?q=$encoded_query&sort=new&limit=10")
+
+            echo "$response" | python3 -c '
 import sys, json
 
 try:
     data = json.load(sys.stdin)
-    posts = data['data']['children']
 
-    for post in posts:
-        p = post['data']
-        print(f\"TITLE: {p['title']}\")
-        print(f\"URL: https://reddit.com{p['permalink']}\")
-        print('---')
+    for post in data["data"]["children"]:
+        p = post["data"]
+        print("TITLE:", p["title"])
+        print("URL: https://reddit.com" + p["permalink"])
+        print("---")
 
 except Exception as e:
-    print('Search failed:', e)
-"
-          done > all_posts.txt
+    print("Error:", e)
+'
+          done >> all_posts.txt
 
           echo "FINAL POSTS:"
           cat all_posts.txt
