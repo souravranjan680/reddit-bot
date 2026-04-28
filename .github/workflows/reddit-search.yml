@@ -1,0 +1,49 @@
+name: Reddit Search Bot
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Search keyword - earn money
+        run: |
+          echo "Searching: earn money"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=earn+money&sort=new"
+
+      - name: Search keyword - earn money student
+        run: |
+          echo "Searching: earn money student"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=earn+money+student&sort=new"
+
+      - name: Search keyword - side hustle
+        run: |
+          echo "Searching: side hustle"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=side+hustle&sort=new"
+
+      - name: Search keyword - side hustle student
+        run: |
+          echo "Searching: side hustle student"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=side+hustle+student&sort=new"
+
+      - name: Search keyword - make money online
+        run: |
+          echo "Searching: make money online"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=make+money+online&sort=new"
+
+      - name: Search keyword - online earning
+        run: |
+          echo "Searching: online earning"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=online+earning&sort=new"
+
+      - name: Search keyword - student jobs
+        run: |
+          echo "Searching: student jobs"
+          curl -A "Mozilla/5.0" "https://www.reddit.com/search.rss?q=student+jobs&sort=new"
