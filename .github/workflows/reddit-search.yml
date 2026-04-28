@@ -13,25 +13,28 @@ jobs:
       - name: Search Reddit links
         run: |
           queries=(
-            "earn+money+reddit"
-            "earn+money+student+reddit"
-            "side+hustle+reddit"
-            "make+money+online+reddit"
-            "student+jobs+reddit"
+            "earn money reddit"
+            "earn money student reddit"
+            "side hustle reddit"
+            "make money online reddit"
+            "student jobs reddit"
           )
 
-          touch links.txt
           > links.txt
 
           for query in "${queries[@]}"
           do
-            echo "Searching $query"
+            echo "Searching: $query"
+
+            encoded_query=$(echo $query | sed 's/ /+/g')
 
             curl -L -A "Mozilla/5.0" \
-            "https://www.google.com/search?q=site:reddit.com+$query" \
-            | grep "reddit.com/r/" \
+            "https://html.duckduckgo.com/html/?q=site:reddit.com+$encoded_query" \
+            | grep -o 'https://www.reddit.com/r/[^"]*' \
             >> links.txt || true
           done
 
+          sort links.txt | uniq > unique_links.txt
+
           echo "Final Links:"
-          cat links.txt
+          cat unique_links.txt
